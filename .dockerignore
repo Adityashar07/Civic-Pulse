@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+backend/database.sqlite
+.git
+.gitignore
+.dockerignore
+Dockerfile
+gcp_deployment.md
+implementation_plan.md
+walkthrough.md
+task.md
+.agents
+.gemini
+*.log

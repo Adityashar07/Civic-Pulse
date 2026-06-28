@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CivicPulse | Hyperlocal Problem Solver</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- App Shell -->
+  <div class="app-container">
+    
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="logo-icon">
+          <i data-lucide="shield-alert" class="icon-pulse"></i>
+        </div>
+        <div>
+          <h1>CivicPulse</h1>
+          <p class="tagline">Hyperlocal AI-Powered Problem Solver</p>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <!-- Role Selector -->
+        <div class="control-group">
+          <label for="role-select"><i data-lucide="user-cog"></i> Persona:</label>
+          <select id="role-select">
+            <option value="1">Citizen: Aria Green (Active)</option>
+            <option value="2">Citizen: John Doe</option>
+            <option value="3">Official: Mark (City Engineer)</option>
+            <option value="4">Moderator: Jane (Community Mod)</option>
+          </select>
+        </div>
+        
+        <!-- Theme Toggle -->
+        <button id="theme-toggle" class="btn-icon" title="Toggle Dark/Light Mode">
+          <i data-lucide="sun" id="theme-icon-sun"></i>
+          <i data-lucide="moon" id="theme-icon-moon" style="display: none;"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace Grid -->
+    <div class="app-body">
+      
+      <!-- Left Sidebar: Profile and Navigation -->
+      <aside class="sidebar">
+        <!-- User Card -->
+        <div class="card user-card">
+          <div class="user-avatar" id="current-user-avatar">AG</div>
+          <div class="user-info">
+            <h3 id="current-user-name">Aria Green</h3>
+            <span class="badge-role" id="current-user-role">Citizen</span>
+          </div>
+          <div class="reputation-bar">
+            <div class="rep-metric">
+              <span class="label">Reputation Points</span>
+              <span class="value" id="current-user-rep">340</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" id="current-user-progress" style="width: 68%;"></div>
+            </div>
+          </div>
+          <div class="user-badges-container">
+            <h4>Earned Badges</h4>
+            <div class="badges-row" id="current-user-badges">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-menu">
+          <button class="nav-item active" data-tab="tab-map">
+            <i data-lucide="map-pin"></i>
+            <span>Interactive Map</span>
+          </button>
+          <button class="nav-item" data-tab="tab-analytics">
+            <i data-lucide="bar-chart-3"></i>
+            <span>Impact Analytics</span>
+          </button>
+          <button class="nav-item" data-tab="tab-leaderboard">
+            <i data-lucide="trophy"></i>
+            <span>Hero Leaderboard</span>
+          </button>
+        </nav>
+
+        <!-- Dynamic AI Alerts feed -->
+        <div class="ai-notifications-card card">
+          <div class="card-header">
+            <h3><i data-lucide="sparkles"></i> AI Activity Engine</h3>
+            <span class="pulse-indicator"></span>
+          </div>
+          <div class="notifications-feed" id="ai-logs">
+            <div class="log-item">
+              <span class="time">Just now</span>
+              <p>Hotspot model loaded. 2 critical clusters detected.</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Central Content Panel -->
+      <main class="content-area">
+        
+        <!-- Tab 1: Interactive Map & Live Feed -->
+        <section id="tab-map" class="tab-panel active">
+          <div class="map-feed-grid">
+            
+            <!-- Map Card -->
+            <div class="card map-card-wrapper">
+              <div class="map-controls">
+                <button class="btn btn-primary btn-report" id="btn-open-report">
+                  <i data-lucide="plus-circle"></i> Report Issue
+                </button>
+                <div class="map-filters">
+                  <button class="btn btn-secondary filter-map active" data-map-filter="all">All Issues</button>
+                  <button class="btn btn-secondary filter-map" data-map-filter="hotspots">Show AI Hotspots</button>
+                </div>
+              </div>
+              <div id="map"></div>
+            </div>
+
+            <!-- Feed Card -->
+            <div class="card feed-card">
+              <div class="feed-header">
+                <h2>Hyperlocal Activity Feed</h2>
+                <div class="feed-filters">
+                  <select id="feed-category-filter">
+                    <option value="">All Categories</option>
+                    <option value="pothole">Potholes</option>
+                    <option value="water_leak">Water Leaks</option>
+                    <option value="streetlight">Streetlights</option>
+                    <option value="waste_management">Waste Management</option>
+                    <option value="infrastructure">Infrastructure</option>
+                  </select>
+                  <select id="feed-status-filter">
+                    <option value="">All Statuses</option>
+                    <option value="reported">Reported</option>
+                    <option value="verified">Verified</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="resolved">Resolved</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="feed-list" id="issues-feed-list">
+                <!-- Dynamically populated issues -->
+                <div class="loader">Loading local issues...</div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- Tab 2: Analytics & AI Forecasting -->
+        <section id="tab-analytics" class="tab-panel">
+          <div class="analytics-header">
+            <h2>System Impact & AI Forecasting</h2>
+            <p>Real-time analytics and future predictive models calculated from reports.</p>
+          </div>
+
+          <div class="metrics-grid">
+            <div class="card metric-card">
+              <div class="icon-box info"><i data-lucide="file-text"></i></div>
+              <div class="metric-info">
+                <span class="label">Total Reports</span>
+                <h3 id="stat-total">--</h3>
+              </div>
+            </div>
+            <div class="card metric-card">
+              <div class="icon-box success"><i data-lucide="check-circle-2"></i></div>
+              <div class="metric-info">
+                <span class="label">Resolved Issues</span>
+                <h3 id="stat-resolved">--</h3>
+              </div>
+            </div>
+            <div class="card metric-card">
+              <div class="icon-box warning"><i data-lucide="flame"></i></div>
+              <div class="metric-info">
+                <span class="label">AI Active Hotspots</span>
+                <h3 id="stat-hotspots">--</h3>
+              </div>
+            </div>
+            <div class="card metric-card">
+              <div class="icon-box primary"><i data-lucide="clock"></i></div>
+              <div class="metric-info">
+                <span class="label">Avg Resolution Time</span>
+                <h3 id="stat-resolution-time">-- days</h3>
+              </div>
+            </div>
+          </div>
+
+          <div class="charts-grid">
+            <!-- Left Chart -->
+            <div class="card chart-card">
+              <h3>Issues by Category</h3>
+              <div class="chart-container">
+                <canvas id="categoryChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Right Chart -->
+            <div class="card chart-card">
+              <h3>Resolution & Trend Forecast</h3>
+              <div class="chart-container">
+                <canvas id="trendChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Hotspot Details List -->
+          <div class="card hotspot-details-card">
+            <div class="card-header">
+              <h3><i data-lucide="alert-triangle"></i> Identified Hyperlocal Hotspots (AI Cluster Map)</h3>
+              <span class="subtext">Groups of 3+ unresolved issues reported within 200m</span>
+            </div>
+            <div class="hotspots-list" id="hotspots-list-container">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Tab 3: Leaderboard -->
+        <section id="tab-leaderboard" class="tab-panel">
+          <div class="leaderboard-header">
+            <h2>Civic Heroes Leaderboard</h2>
+            <p>Citizen contributions and achievements in addressing hyperlocal concerns.</p>
+          </div>
+          <div class="card leaderboard-card">
+            <table class="leaderboard-table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Hero</th>
+                  <th>Role</th>
+                  <th>Badges</th>
+                  <th>Reputation</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+
+    </div>
+  </div>
+
+  <!-- MODAL: Report Issue -->
+  <div class="modal" id="modal-report">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Report a Local Problem</h2>
+        <button class="btn-close" id="btn-close-report"><i data-lucide="x"></i></button>
+      </div>
+      <form id="report-form" class="modal-body">
+        <div class="form-group">
+          <label for="input-title">Title</label>
+          <input type="text" id="input-title" placeholder="e.g. Broken pipe flooding Sector 4 Main Road" required>
+        </div>
+
+        <div class="form-group">
+          <label for="input-description">Description</label>
+          <textarea id="input-description" rows="3" placeholder="Provide details about the issue. Please include symptoms (water color, traffic blocking, etc.) to help the AI categorize..." required></textarea>
+        </div>
+
+        <!-- AI Assistant Preview Widget -->
+        <div class="ai-assist-box" id="ai-assist-box">
+          <div class="ai-assist-header">
+            <i data-lucide="sparkles"></i>
+            <span>Real-time AI Co-Pilot analysis</span>
+          </div>
+          <div class="ai-assist-body">
+            <div class="ai-assist-tag">
+              <span class="label">Category:</span>
+              <span class="value" id="ai-preview-category">Analyzing...</span>
+            </div>
+            <div class="ai-assist-tag">
+              <span class="label">Severity:</span>
+              <span class="value" id="ai-preview-severity">Analyzing...</span>
+            </div>
+            <div class="ai-duplicate-warning" id="ai-preview-duplicate" style="display: none;">
+              <i data-lucide="alert-octagon"></i>
+              <span>Potential duplicate issue detected nearby!</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="input-latitude">Latitude</label>
+            <input type="number" id="input-latitude" step="any" placeholder="28.6139" required>
+          </div>
+          <div class="form-group">
+            <label for="input-longitude">Longitude</label>
+            <input type="number" id="input-longitude" step="any" placeholder="77.2090" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="input-address">Address</label>
+          <input type="text" id="input-address" placeholder="e.g. Near Central Park crossing, Sector 4">
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-use-geolocation" style="margin-top: 8px;">
+            <i data-lucide="map-pin"></i> Pinpoint Center on Map
+          </button>
+        </div>
+
+        <div class="form-group">
+          <label for="input-image">Issue Image URL</label>
+          <input type="text" id="input-image" placeholder="Image URL (e.g. https://images.unsplash.com/...)" value="https://images.unsplash.com/photo-1515162305285-0293e4767cc2?q=80&w=600&auto=format&fit=crop">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-report">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-report">Submit Issue</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: View Issue Details -->
+  <div class="modal" id="modal-details">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="details-title">Issue Details</h2>
+        <button class="btn-close" id="btn-close-details"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body" id="details-body">
+        <!-- Dynamically Populated Details -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast-container"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- App JS -->
+  <script src="app.js"></script>
+</body>
+</html>
