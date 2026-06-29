@@ -15,13 +15,15 @@ const {
 } = require('./ai_engine');
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 8080;
 
 app.use(cors());
 app.use(express.json());
 
+console.log(path.join(__dirname, '..','frontend'));
+
 // Serve static frontend files
-app.use('/static', express.static(path.join(__dirname, '../frontend')));
+app.use(express.static(path.join(__dirname, '..','frontend')));
 
 // Endpoint: Check duplicate before reporting
 app.post('/api/issues/check-duplicate', async (req, res) => {
