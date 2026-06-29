@@ -14,7 +14,7 @@ WORKDIR /usr/src/app
 
 # Set production env
 ENV NODE_ENV=production
-ENV PORT=8000
+ENV PORT=8080
 
 # Copy node_modules from builder stage
 COPY --from=builder /usr/src/app/node_modules ./node_modules
@@ -24,7 +24,7 @@ COPY backend ./backend
 COPY frontend ./frontend
 
 # Expose server port
-EXPOSE 8000
+EXPOSE 8080
 
 # Run the server
 CMD ["node", "backend/server.js"]
